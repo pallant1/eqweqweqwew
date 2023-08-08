@@ -1,0 +1,20 @@
+def get_code_from_rambler(login, password):
+    mail = imaplib.IMAP4_SSL('imap.rambler.ru')
+    mail.login(login, password)
+    mail.list()
+    mail.select("inbox")
+    result, data = mail.search(None, "ALL")
+    ids = data[0]
+    id_list = ids.split()
+    latest_email_id = id_list[-1]
+    result, data = mail.fetch(latest_email_id, '(RFC822)')
+    result, data = mail.uid('search', None, "ALL")
+    latest_email_uid = data[0].split()[-1]
+    result, data = mail.uid('fetch', latest_email_uid, '(RFC822)')
+    raw_email = data[0][1]
+    mail = raw_email.decode('UTF-8')
+    el = mail.split()
+    index_of_code = el.index("#F0F0F3;border-radius=")+2
+    code = el[index_of_code][6:12]
+
+    return code
